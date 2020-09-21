@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+// Package peekabuf offers buffers with the capability to be peeked without
+// interfering  the read function.
 package peekabuf
 
 import (
@@ -15,14 +17,17 @@ import (
 	"io"
 )
 
+// EOF is a special rune indicating the end of the buffer.
+const EOF = rune(-1)
+
+// RuneReader is a buffered reader which operates on runes.
 type RuneReader struct {
 	reader      *bufio.Reader
 	frontBuffer *list.List
 	lastRead    rune
 }
 
-const EOF = rune(-1)
-
+// NewRuneReader creates a new instance of a RuneReader.
 func NewRuneReader(reader io.Reader) *RuneReader {
 	return &RuneReader{
 		reader:      bufio.NewReader(reader),
@@ -31,6 +36,8 @@ func NewRuneReader(reader io.Reader) *RuneReader {
 	}
 }
 
+// Read reads and removes the next rune from the buffer and returns it.
+// If there are no runes left in the buffer, it returns an EOF.
 func (rr *RuneReader) Read() rune {
 	var result rune
 	if rr.frontBuffer.Len() > 0 {
@@ -46,6 +53,9 @@ func (rr *RuneReader) Read() rune {
 	return result
 }
 
+// Unread puts back the last read rune to the front of the buffer. It reverts
+// the Read function. If there was no call to Read, it can't unread the rune
+// and the call to this function is a no op.
 func (rr *RuneReader) Unread() {
 	if rr.lastRead != EOF {
 		rr.frontBuffer.PushFront(rr.lastRead)
@@ -53,6 +63,9 @@ func (rr *RuneReader) Unread() {
 	}
 }
 
+// Peek returns the desired amount of runes without removing them from the
+// buffer. If there are not enough runes in the buffer, it returns as many
+// as possible with an EOF rune at the end.
 func (rr *RuneReader) Peek(n uint) ([]rune, error) {
 	result := make([]rune, 0, n)
 	for i := uint(0); i < n; i++ {
