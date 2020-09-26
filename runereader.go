@@ -8,7 +8,8 @@
  */
 
 // Package peekabuf offers buffers with the capability to be peeked without
-// interfering  the read function.
+// side effects on the unread functionality. Along with that, it returns a
+// special `EOF` rune instead of an error if it reaches the end of the buffer.
 package peekabuf
 
 import (
