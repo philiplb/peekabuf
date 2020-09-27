@@ -27,5 +27,42 @@ Just `go get` it:
 go get github.com/philiplb/peekabuf
 ```
 
+## Usage
+
+First, import it:
+
+```Go
+import "github.com/philiplb/peekabuf"
+```
+
+Then, create a new RuneReader with a `io.Reader` as source, in this case, simply a `bytes.BufferString` is used:
+
+```Go
+r := peekabuf.NewRuneReader(bytes.NewBufferString("pab"))
+```
+
+Now, you can read, unread, peek on it. Note the returned `EOF` rune if the end of the buffer is reached:
+
+```Go
+// read a bit in the buffer
+read := r.Read() // read == 'p'
+read = r.Read() // read == 'a'
+
+// unread the last rune
+r.Unread()
+read = r.Read() // read == 'a'
+
+// peek a bit in the buffer
+r.Unread() // unread the last rune so we have a bit to peek
+peeked, err := r.Peek(2) // peeked == {'a', 'b'}
+peeked, err := r.Peek(4) // peeked == {'a', 'b', peekabuf.EOF}, note that four runes were requested
+
+// read the rest of the buffer
+read = r.Read() // read == 'a'
+read = r.Read() // read == 'b'
+read = r.Read() // read == peekabuf.EOF
+read = r.Read() // read == peekabuf.EOF
+```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
