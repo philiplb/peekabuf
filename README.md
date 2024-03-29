@@ -10,8 +10,8 @@ free there:
 >  Calling Peek prevents a UnreadByte or UnreadRune call from succeeding until the next read
 > operation. 
 
-But this was something needed to fix a bug in the
-[SQLDumpSplitter3](https://philiplb.de/sqldumpsplitter3). So I created this little library
+But this is something needed within the SQL parser of the
+[SQLSplitter](https://sqlsplitter.com). So this little library was created
 basically wrapping `bufio.Reader` and re-implementing small parts of it.
 
 In addition to the side effect free peek function, it returns an `EOF` rune instead of an
